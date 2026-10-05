@@ -1,0 +1,32 @@
+{% extends "base.html" %}{% block title %}Keys — BYOK{% endblock %}
+{% block body %}
+<h1>API keys</h1>
+<p class="note">Values are never shown — envelopes only. Every key belongs to one owner.</p>
+<form method="get" action="/keys" class="inline">
+<input name="owner" placeholder="filter by owner" value="{{ owner_filter }}">
+<button class="btn ghost" type="submit">Filter</button>
+{% if owner_filter %}<a class="btn ghost" href="/keys">clear</a>{% endif %}
+</form>
+<table><tr><th>key_id</th><th>label</th><th>provider</th><th>owner</th><th>status</th><th>fallback consent</th><th></th></tr>
+{% for k in keys %}
+<tr>
+<td class="mono">{{ k.key_id }}</td><td>{{ k.label }}</td><td>{{ k.provider }}</td>
+<td>{{ k.owner }}</td><td>{{ k.status.value if k.status else k.status }}</td>
+<td>{{ "yes" if k.allow_cross_provider_fallback else "no" }}</td>
+<td>
+<form method="post" action="/keys/{{ k.key_id }}/revoke" class="inline" onsubmit="return confirm('Revoke {{ k.key_id }}? Immediate, no drain.')">
+<button class="btn danger" type="submit">Revoke</button></form>
+</td></tr>
+{% endfor %}</table>
+<h2>Add key</h2>
+<div class="card"><form method="post" action="/keys/add">
+<input name="owner" placeholder="owner (required)" required>
+<input name="provider" placeholder="provider e.g. openai" required>
+<input name="label" placeholder="label e.g. personal" required>
+<input name="secret" type="password" placeholder="API secret" required autocomplete="off">
+<button class="btn" type="submit">Add (encrypted at rest)</button>
+</form></div>
+<h2>Rotate key</h2>
+<div class="card"><form method="post" action="/keys/REPLACE/revoke" onsubmit="return false" class="note">
+Use: <span class="kbd">POST /keys/&lt;key_id&gt;/rotate</span> with form field <span class="kbd">secret</span> (CLI: <span class="kbd">byok rotate-key</span>).</form></div>
+{% endblock %}

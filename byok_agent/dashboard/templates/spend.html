@@ -1,0 +1,30 @@
+{% extends "base.html" %}{% block title %}Spend — BYOK{% endblock %}
+{% block body %}
+<h1>Spend <span class="note">(all costs are ESTIMATES — never billing truth)</span></h1>
+<h2>Per key</h2>
+<table><tr><th>key</th><th>provider</th><th>calls</th><th>in tok</th><th>out tok</th><th>est. USD</th><th>daily cap</th><th>today</th></tr>
+{% for r in per_key %}
+{% set cap = cap_map.get(r.key_id) %}
+<tr><td class="mono">{{ r.key_id }}</td><td>{{ r.provider }}</td><td>{{ r.calls }}</td>
+<td>{{ r.in_tok or 0 }}</td><td>{{ r.out_tok or 0 }}</td><td>{{ usd(r.usd or 0) }}</td>
+<td>{% if cap %}{{ usd(cap.daily_usd_cap) }}{% else %}<span class="note">—</span>{% endif %}</td>
+<td>{% if cap %}
+<div class="bar"><i class="{% if cap.spent_today >= cap.daily_usd_cap %}over{% elif cap.spent_today >= 0.8*cap.daily_usd_cap %}hot{% endif %}"
+style="width:{{ (100*cap.spent_today/cap.daily_usd_cap)|round(1) if cap.daily_usd_cap else 0 }}%"></i></div>
+<span class="note">{{ usd(cap.spent_today) }}</span>{% else %}<span class="note">—</span>{% endif %}</td></tr>
+{% endfor %}</table>
+<h2>Daily budget caps</h2>
+<div class="card"><form method="post" action="/budgets/set">
+<input name="key_id" placeholder="key_id" required>
+<input name="daily_usd_cap" type="number" step="0.01" min="0" placeholder="daily USD cap" required>
+<button class="btn" type="submit">Set cap</button></form>
+<form method="post" action="/budgets/remove" class="inline">
+<input name="key_id" placeholder="key_id" required>
+<button class="btn ghost" type="submit">Remove cap</button></form></div>
+<h2>Per provider</h2>
+<table><tr><th>provider</th><th>calls</th><th>est. USD</th></tr>
+{% for r in per_provider %}<tr><td>{{ r.provider }}</td><td>{{ r.calls }}</td><td>{{ usd(r.usd or 0) }}</td></tr>{% endfor %}</table>
+<h2>Per day (last 30)</h2>
+<table><tr><th>day (UTC)</th><th>calls</th><th>est. USD</th></tr>
+{% for r in per_day %}<tr><td class="mono">{{ r.day }}</td><td>{{ r.calls }}</td><td>{{ usd(r.usd or 0) }}</td></tr>{% endfor %}</table>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block title %}Approvals — BYOK{% endblock %}
+{% block body %}
+<h1>Pending approvals</h1>
+<p class="note"><span class="kbd">interrupt()</span> asks land here (build promotions, deploy gates).
+Approving a <b>build-promote</b> copies the staged files into the real project directory.</p>
+{% for a in pending %}
+<div class="card">
+<p><b>#{{ a.id }}</b> <span class="pill off">{{ a.kind }}</span>
+<span class="note mono">{{ a.thread_id }} · {{ a.created_at[:19] if a.created_at }}</span></p>
+<p>{{ a.summary }}</p>
+{% if a.payload.get("paths") %}<p class="note mono">files: {{ a.payload.paths | join(", ") }}</p>{% endif %}
+{% if a.payload.get("diff_preview") %}<pre>{{ a.payload.diff_preview }}</pre>{% endif %}
+<form method="post" action="/approvals/{{ a.id }}/decide" class="inline">
+<input type="hidden" name="approved" value="true"><input name="by" placeholder="your name" value="operator">
+<button class="btn ok" type="submit">Approve</button></form>
+<form method="post" action="/approvals/{{ a.id }}/decide" class="inline">
+<input type="hidden" name="approved" value="false"><input name="by" placeholder="your name" value="operator">
+<button class="btn danger" type="submit">Deny</button></form>
+</div>
+{% else %}
+<p class="note">No pending approvals. 🎉</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block title %}Kill switch — BYOK{% endblock %}
+{% block body %}
+<h1>Kill switch</h1>
+<div class="card">
+<p>State: <span class="pill {{ 'on' if state.engaged else 'off' }}">{{ 'ENGAGED' if state.engaged else 'CLEAR' }}</span></p>
+{% if state.engaged %}
+<p class="note">Engaged by <b>{{ state.engaged_by }}</b> at <span class="mono">{{ state.engaged_at }}</span><br>Reason: {{ state.reason or "—" }}</p>
+{% endif %}
+<p class="note">Engaging stops ALL new model calls and tool executions across every
+enforcer (env var <span class="kbd">AGENT_KILL_SWITCH=1</span> is the second, independent path).
+In-flight work finishes its current step; nothing new starts.</p>
+<form method="post" action="/kill/toggle">
+<input type="hidden" name="action" value="{{ 'off' if state.engaged else 'on' }}">
+<input name="by" placeholder="your name" value="operator">
+<input name="reason" placeholder="reason (required to engage)" style="width:320px">
+<button class="btn {{ 'ok' if state.engaged else 'danger' }}" type="submit"
+{% if not state.engaged %}onsubmit="return confirm('ENGAGE the kill switch? All new agent work stops.')"{% endif %}>
+{{ 'Disengage' if state.engaged else 'ENGAGE KILL SWITCH' }}</button>
+</form></div>
+{% endblock %}

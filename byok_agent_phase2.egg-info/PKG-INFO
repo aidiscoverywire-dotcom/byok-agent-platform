@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: byok-agent-phase2
+Version: 0.3.0
+Summary: BYOK AI Agent Platform — Phase 2 (WhatsApp control)
+Requires-Python: >=3.12
+Requires-Dist: litellm==1.65.1
+Requires-Dist: langgraph==0.6.4
+Requires-Dist: langgraph-checkpoint-postgres==2.0.4
+Requires-Dist: asyncpg==0.30.0
+Requires-Dist: psycopg[binary]==3.3.6
+Requires-Dist: cryptography==44.0.2
+Requires-Dist: pydantic==2.10.6
+Requires-Dist: python-dotenv==1.0.1
+Requires-Dist: aiosqlite==0.20.0
+Requires-Dist: docker==7.1.0
+Requires-Dist: fastapi==0.115.6
+Requires-Dist: uvicorn==0.34.0
+Requires-Dist: httpx==0.28.1

@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block title %}Runs — BYOK{% endblock %}
+{% block body %}
+<h1>Recent activity</h1>
+<h2>Ledger (metered calls)</h2>
+<table><tr><th>time (UTC)</th><th>task</th><th>user</th><th>key</th><th>model</th><th>tok in/out</th><th>est. USD</th><th>status</th></tr>
+{% for r in ledger %}
+<tr><td class="mono">{{ r.created_at[:19] }}</td><td class="mono">{{ r.task_id or "—" }}</td>
+<td>{{ r.user_id or "—" }}</td><td class="mono">{{ r.key_id }}</td><td class="mono">{{ r.model }}</td>
+<td>{{ r.input_tokens }}/{{ r.output_tokens }}</td><td>{{ usd(r.estimated_cost_usd or 0) }}</td>
+<td>{{ r.status }}</td></tr>
+{% endfor %}</table>
+<h2>Audit log (operator actions)</h2>
+<table><tr><th>seq</th><th>time</th><th>actor</th><th>action</th></tr>
+{% for a in audit %}
+<tr><td>{{ a.seq }}</td><td class="mono">{{ a.ts[:19] if a.ts }}</td><td>{{ a.actor }}</td><td class="mono">{{ a.action }}</td></tr>
+{% endfor %}</table>
+{% endblock %}

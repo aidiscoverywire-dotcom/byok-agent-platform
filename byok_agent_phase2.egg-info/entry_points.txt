@@ -1,0 +1,2 @@
+[console_scripts]
+byok = byok_agent.cli.main:main

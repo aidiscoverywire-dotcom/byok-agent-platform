@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Routing — BYOK{% endblock %}
+{% block body %}
+<h1>Model routing rules</h1>
+<p class="note">A key with ≥1 rule may ONLY serve models matching a pattern
+(fnmatch: <span class="kbd">deepseek/*</span>, <span class="kbd">ollama/*</span>). No rules = no restriction.</p>
+<table><tr><th>id</th><th>key_id</th><th>pattern</th><th>created</th><th></th></tr>
+{% for r in rules %}
+<tr><td>{{ r.id }}</td><td class="mono">{{ r.key_id }}</td><td class="mono">{{ r.model_pattern }}</td>
+<td class="mono">{{ r.created_at[:19] if r.created_at }}</td>
+<td><form method="post" action="/routing/{{ r.id }}/delete" class="inline">
+<button class="btn ghost" type="submit">Delete</button></form></td></tr>
+{% endfor %}</table>
+<h2>Add rule</h2>
+<div class="card"><form method="post" action="/routing/add">
+<input name="key_id" placeholder="key_id" required>
+<input name="model_pattern" placeholder="e.g. deepseek/*" required>
+<button class="btn" type="submit">Add rule</button></form></div>
+{% endblock %}
